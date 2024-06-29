@@ -1,5 +1,7 @@
 mod notifier;
 
 fn main() {
-    println!("Hello, world!");
+
+    dotenvy::dotenv().ok();
+    notifier::main();
 }
