@@ -1,14 +1,17 @@
 [package]
-name = "fetcher"
+name = "consumer"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-reqwest = { version = "0.12.5" }
+bloomfilter = "1"
+uuid = { version = "1.0", features = ["v4"] }
 
+async-nats = {workspace = true}
+futures = {workspace = true}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true}
 tokio = {workspace = true}
-async-nats = {workspace = true}
-futures = {workspace = true}
 dotenvy = {workspace = true}
+entity = {workspace = true}
+service = {workspace = true}
