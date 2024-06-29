@@ -23,6 +23,11 @@ pub async fn start_fetch() {
 }
 
 async fn handle_resp(resp: Response, client: &async_nats::Client) {
+    if !resp.status().is_success() {
+        println!("failed fetching data, status code: {}", resp.status());
+        return;
+    }
+
     let body = resp.text().await.unwrap_or_default();
     if body.is_empty() {
         println!("empty response");
