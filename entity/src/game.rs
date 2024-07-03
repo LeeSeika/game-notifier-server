@@ -51,3 +51,9 @@ pub struct Player {
     pub is_pro: Option<bool>,
     pub locked_until: Option<String>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct NotificationMessage {
+    pub subscriber: String,
+    pub game: Game,
+}

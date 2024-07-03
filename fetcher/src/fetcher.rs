@@ -2,7 +2,6 @@ use std::env;
 use reqwest::{Client, IntoUrl, Response, Version};
 use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
-use serde_json::Result;
 
 #[tokio::main]
 pub async fn start_fetch() {
@@ -34,17 +33,14 @@ async fn handle_resp(resp: Response, client: &async_nats::Client) {
         return;
     }
 
-    // let res: Result<Vec<Game>> = serde_json::from_str(body.as_str());
-    // let games: Vec<Game>;
-    // match res {
-    //     Ok(gs) => games = gs,
-    //     Err(e) => {
-    //         println!("error parsing game: {}", e);
-    //         return
-    //     },
-    // }
+    println!("{:?}", body);
 
-    client.publish("games", body.into()).await.unwrap();
+    let publish_res = client.publish("games", body.into())
+        .await;
+    match publish_res {
+        Ok(_) => println!("published message"),
+        Err(e) => println!("error publishing message: {}", e),
+    }
 }
 
 async fn get<T: IntoUrl + Clone>(url: T) -> reqwest::Result<Response> {

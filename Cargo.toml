@@ -2,8 +2,8 @@
 resolver = "2"
 members = [
     "fetcher",
-    "notifier",
-    "entity",
+    "consumer",
+    "entity", "service", "notifier", "api",
 ]
 
 [workspace.dependencies]
@@ -14,3 +14,7 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 dotenvy = "0.15.7"
 async-nats = "0.35.1"
 futures = "0.3.30"
+tikv-client = "*"
+
+entity  = { path = "entity" }
+service = {path = "service"}
