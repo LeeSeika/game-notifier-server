@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::env;
 use std::str::from_utf8;
 use futures::StreamExt;
-use entity::game::Game;
 use bloomfilter::Bloom;
+use entity::dto::game::Game;
 
 #[tokio::main]
 pub(crate) async fn main() {

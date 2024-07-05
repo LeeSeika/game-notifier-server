@@ -3,6 +3,7 @@ use std::mem::take;
 use std::str::from_utf8;
 use async_nats::Subscriber;
 use futures::StreamExt;
+use entity::dto::game::NotificationMessage;
 use entity::game::{ NotificationMessage};
 
 #[tokio::main]

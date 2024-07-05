@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use entity::game::Game;
+use entity::dto::game::Game;
 
 pub(crate) async fn r#do<'a>(games: &'a Vec<Game>, game_info_map: &HashMap<&str, &Game>) -> HashMap<i64, &'a str> {
     let mut player_in_game_map: HashMap<i64, &str> = HashMap::new();

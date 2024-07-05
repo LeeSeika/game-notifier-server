@@ -3,7 +3,7 @@ resolver = "2"
 members = [
     "fetcher",
     "consumer",
-    "entity", "service", "notifier", "api",
+    "entity", "service", "notifier", "api", "migration",
 ]
 
 [workspace.dependencies]
@@ -14,7 +14,9 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 dotenvy = "0.15.7"
 async-nats = "0.35.1"
 futures = "0.3.30"
-tikv-client = "*"
+#tikv-client = "*"
+sea-orm = { version = "0.12.0", features = ["runtime-tokio-native-tls", "sqlx-postgres"] }
 
 entity  = { path = "entity" }
 service = {path = "service"}
+api = { path = "api" }
