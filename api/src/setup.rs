@@ -1,11 +1,10 @@
 use std::env;
 use axum::Router;
-use axum::routing::get;
-use sea_orm::{Database, DatabaseConnection};
+use sea_orm::{Database};
 use migration::{Migrator, MigratorTrait};
 use service::subscription::subscription::SubscriptionService;
 use service::user::user::UserService;
-use crate::handlers::test_wechat;
+use crate::handlers::{cancel_subscriptions, list_subscriptions, sign_in, subscribe};
 
 #[tokio::main]
 pub(crate) async fn start() {
@@ -21,12 +20,15 @@ pub(crate) async fn start() {
     Migrator::up(&conn, None).await.unwrap();
 
     let ctx = Context {
-        user_service: UserService::new(&conn),
-        subscription_service: SubscriptionService::new(&conn),
+        user_service: UserService::new(conn.clone()),
+        subscription_service: SubscriptionService::new(conn.clone()),
     };
 
     let app = Router::new()
-        .route("/", get(test_wechat))
+        .route("/sign_in", axum::routing::post(sign_in))
+        .route("/subscribe", axum::routing::post(subscribe))
+        .route("/cancel_subscription", axum::routing::post(cancel_subscriptions))
+        .route("/list_subscriptions/:id", axum::routing::get(list_subscriptions))
         .with_state(ctx);
 
     let listener = tokio::net::TcpListener::bind(&server_url).await.unwrap();

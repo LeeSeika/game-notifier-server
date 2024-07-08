@@ -1,7 +1,6 @@
 use core::fmt;
-use sea_orm::{ActiveModelBehavior, DeriveEntityModel, DeriveRelation, EnumIter, Related, RelationDef, RelationTrait};
+use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
-use crate::dto::PlayerAccountID;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Serialize, Deserialize, Default)]
 #[sea_orm(table_name = "subscriptions")]
@@ -11,10 +10,10 @@ pub struct Model {
     #[sea_orm(index)]
     pub subscriber_id: i64,
     #[sea_orm(index)]
-    pub player_account_id: PlayerAccountID,
+    pub player_account_id: i64,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+#[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     Subscriber,
 }
@@ -22,7 +21,10 @@ pub enum Relation {
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Self::Subscriber => RelationDef::BelongsTo(super::subscriber::Entity),
+            Self::Subscriber => Entity::belongs_to(super::subscriber::Entity)
+                .from(Column::SubscriberId)
+                .to(super::subscriber::Column::Id)
+                .into(),
         }
     }
 }

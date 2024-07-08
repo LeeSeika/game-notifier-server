@@ -11,16 +11,16 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Subscriber::Table)
+                    .table(Subscribers::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Subscriber::ID)
+                        ColumnDef::new(Subscribers::ID)
                             .big_integer()
                             .not_null()
                             .primary_key()
                             .auto_increment(),
                     )
-                    .col(ColumnDef::new(Subscriber::Email).string().not_null())
+                    .col(ColumnDef::new(Subscribers::Email).string().not_null())
                     .to_owned(),
             )
             .await?;
@@ -28,17 +28,17 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Subscription::Table)
+                    .table(Subscriptions::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(Subscription::ID)
+                    .col(ColumnDef::new(Subscriptions::ID)
                              .big_integer()
                              .not_null()
                              .primary_key()
                              .auto_increment(), )
-                    .col(ColumnDef::new(Subscription::SubscriberID)
+                    .col(ColumnDef::new(Subscriptions::SubscriberID)
                         .big_integer()
                         .not_null())
-                    .col(ColumnDef::new(Subscription::PlayerAccountID)
+                    .col(ColumnDef::new(Subscriptions::PlayerAccountID)
                         .big_integer()
                         .not_null())
                     .to_owned(),
@@ -46,25 +46,25 @@ impl MigrationTrait for Migration {
             .await
     }
 
-    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-
-        // manager
-        //     .drop_table(Table::drop().table(Subscriber::Table).to_owned())
-        //     .await
-        Ok(())
-    }
+    // async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+    //     // Replace the sample below with your own migration scripts
+    //
+    //     // manager
+    //     //     .drop_table(Table::drop().table(Subscriber::Table).to_owned())
+    //     //     .await
+    //     Ok(())
+    // }
 }
 
 #[derive(DeriveIden)]
-enum Subscriber {
+enum Subscribers {
     Table,
     ID,
     Email,
 }
 
 #[derive(DeriveIden)]
-enum Subscription {
+enum Subscriptions {
     Table,
     ID,
     SubscriberID,

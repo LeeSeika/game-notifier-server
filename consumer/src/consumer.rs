@@ -3,7 +3,11 @@ use std::env;
 use std::str::from_utf8;
 use futures::StreamExt;
 use bloomfilter::Bloom;
+use sea_orm::Database;
 use entity::dto::game::Game;
+use service::Context;
+use service::subscription::subscription::SubscriptionService;
+use service::user::user::UserService;
 
 #[tokio::main]
 pub(crate) async fn main() {
@@ -15,6 +19,16 @@ pub(crate) async fn main() {
         .unwrap_or("0.01".to_string())
         .parse::<f64>()
         .unwrap_or(0.01);
+
+    let db_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
+
+    let conn = Database::connect(db_url)
+        .await
+        .expect("Database connection failed");
+    let ctx = Context {
+        user_service: UserService::new(conn.clone()),
+        subscription_service: SubscriptionService::new(conn.clone()),
+    };
 
     let nats_url = env::var("NATS_URL").unwrap();
     let client = async_nats::connect(nats_url).await.unwrap();
@@ -64,7 +78,7 @@ pub(crate) async fn main() {
         }
 
         let player_in_game_map = crate::filter::r#do(&games, &game_info_map).await;
-        let _ = service::dispatcher::dispatch(player_in_game_map,  game_info_map, &client)
+        let _ = service::dispatcher::dispatch(&ctx, player_in_game_map,  game_info_map, &client)
             .await
             .unwrap();
     }
@@ -84,3 +98,4 @@ async fn consume_and_convert(games_subscriber: &mut async_nats::Subscriber) -> R
 
     Ok(games)
 }
+

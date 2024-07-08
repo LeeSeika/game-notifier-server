@@ -1,5 +1,4 @@
 use core::fmt;
-use sea_orm::ActiveValue;
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -13,7 +12,7 @@ pub struct Model {
     pub email: String,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+#[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     Subscriptions,
 }
@@ -39,3 +38,4 @@ impl fmt::Display for ActiveModel {
         write!(f, "{}, {}", self.id.as_ref(), self.email.as_ref())
     }
 }
+

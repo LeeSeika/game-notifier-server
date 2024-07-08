@@ -1,68 +1,36 @@
 use std::collections::{HashMap};
-use std::env;
 use std::str;
 use entity::dto::game::{Game, NotificationMessage};
-use entity::dto::subscription::Subscription;
-use crate::subscription::subscription::SubscriptionService;
+use crate::Context;
+use crate::subscription::subscription::{SubscriptionTrait};
 
-pub async fn dispatch(player_in_game_map: HashMap<i64, &str>, game_info_map: HashMap<&str, &Game>, nats_client: &async_nats::Client) -> Result<(), Box<dyn std::error::Error>>{
-    let urls= env::var("TIKV.URLS")
-        .unwrap()
-        .split(",")
-        .map(|s| s.to_string())
-        .collect();
+pub async fn dispatch(ctx: &Context, player_in_game_map: HashMap<i64, &str>, game_info_map: HashMap<&str, &Game>, nats_client: &async_nats::Client) -> Result<(), Box<dyn std::error::Error>>{
 
     for (player_id, game_id) in player_in_game_map {
-        SubscriptionService
-        let get_op = client.get(player_id.to_string()).await.unwrap();
+        let get_subscribers_res = ctx.subscription_service.get_subscribers(player_id)
+            .await;
         let subscribers;
-        match get_op {
-            Some(v) => {
-                subscribers = v;
-                println!("{:?}", subscribers)
-            },
-            None => {
-                continue
-            },
+        match get_subscribers_res {
+            Ok(s) => subscribers = s,
+            Err(e) => {eprintln!("error getting subscribers: {}", e); continue}
         }
-
-        let convert_res = str::from_utf8(&subscribers);
-        let subscribers;
-        match convert_res {
-            Ok(v) =>{
-                subscribers = v.to_string();
-                println!("{:?}", subscribers);
-            },
-            Err(_) => {
-                client.delete(player_id.to_string()).await.ok();
-                //todo: log error
-                eprintln!("error converting subscription data to string");
-                continue
-            },
-        }
-
-        let subscribers: Vec<String> = subscribers.split(",").map(|s| s.to_string()).collect();
-        println!("subs: {:?}", subscribers);
 
         let get_op = game_info_map.get(game_id);
         let game_info;
         match get_op {
             Some(g) => game_info = g,
             None => {
-                println!("no game found for {}", game_id);
+                println!("no game found for game_id: {}", game_id);
                 continue;
             },
         }
 
         for subscriber in subscribers {
 
-            let uuid = uuid::Uuid::new_v4();
-
             let msg = NotificationMessage {
-                subscriber: uuid.to_string(),
+                subscriber: subscriber.to_string(),
                 game: (*game_info).to_owned(),
             };
-            println!("subscription: {:?}", uuid.to_string());
             let json_res = serde_json::to_string(&msg);
             let json;
             match json_res {
@@ -80,3 +48,4 @@ pub async fn dispatch(player_in_game_map: HashMap<i64, &str>, game_info_map: Has
 
     Ok(())
 }
+
