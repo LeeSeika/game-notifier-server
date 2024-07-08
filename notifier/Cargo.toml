@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+lettre = "*"
+
 async-nats = {workspace = true}
 futures = {workspace = true}
 serde = { workspace = true, features = ["derive"] }

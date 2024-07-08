@@ -1,12 +1,22 @@
 use std::env;
 use std::str::from_utf8;
 use futures::StreamExt;
+use lettre::{Message, SmtpTransport, Transport};
+use lettre::message::header::ContentType;
+use lettre::transport::smtp::authentication::Credentials;
 use entity::dto::game::NotificationMessage;
+use crate::mailer::Mailer;
 
 #[tokio::main]
 pub(crate) async fn main() {
     let nats_url = env::var("NATS_URL").unwrap();
+    let sender = env::var("EMAIL.SENDER").unwrap();
+    let smtp_username = env::var("EMAIL.SMTP_USERNAME").unwrap();
+    let smtp_pwd = env::var("EMAIL.SMTP_PWD").unwrap();
+    let smtp_host = env::var("EMAIL.SMTP_HOST").unwrap();
+
     let client = async_nats::connect(nats_url).await.unwrap();
+    let mailer = Mailer::new(sender, smtp_username, smtp_pwd, smtp_host);
 
     let mut notification_subscriber = client
         .subscribe("notification")
@@ -24,7 +34,7 @@ pub(crate) async fn main() {
             }
         };
 
-        println!("{:?}", notification);
+        mailer.send_mail(notification).await
     }
 }
 
