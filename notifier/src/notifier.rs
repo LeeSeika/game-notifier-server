@@ -11,7 +11,7 @@ use crate::mailer::Mailer;
 pub(crate) async fn main() {
     let nats_url = env::var("NATS_URL").unwrap();
     let sender = env::var("EMAIL.SENDER").unwrap();
-    let smtp_username = env::var("EMAIL.SMTP_USERNAME").unwrap();
+    let smtp_username = env::var("EMAIL.SMTP_USERNAME").expect("err email smtp username");
     let smtp_pwd = env::var("EMAIL.SMTP_PWD").unwrap();
     let smtp_host = env::var("EMAIL.SMTP_HOST").unwrap();
 

@@ -1,11 +1,11 @@
 use sea_orm::{ActiveModelTrait, ColumnTrait, ConnectionTrait, DatabaseBackend, DatabaseConnection, DbErr, EntityTrait, QueryFilter, Statement};
 use sea_orm::ActiveValue::Set;
-use entity::subscriptions;
+use entity::{subscriber, subscriptions};
 
 pub trait SubscriptionTrait {
     async fn subscribe(&self, uid: i64, player_account_id: Vec<i64>) -> Result<(), DbErr>;
     async fn cancel_subscriptions(&self, uid: i64, player_account_id: Vec<i64>) -> Result<(), DbErr>;
-    async fn get_subscribers(&self, player_account_id: i64) -> Result<Vec<i64>, DbErr>;
+    async fn get_subscribers(&self, player_account_id: i64) -> Result<Vec<subscriber::Model>, DbErr>;
     async fn get_subscriptions(&self, uid: i64) -> Result<Vec<i64>, DbErr>;
 }
 
@@ -61,7 +61,7 @@ impl SubscriptionTrait for SubscriptionService {
         Ok(())
     }
 
-    async fn get_subscribers(&self, player_account_id: i64) -> Result<Vec<i64>, DbErr> {
+    async fn get_subscribers(&self, player_account_id: i64) -> Result<Vec<subscriber::Model>, DbErr> {
         let subscriptions = subscriptions::Entity::find()
             .filter(subscriptions::Column::PlayerAccountId.eq(player_account_id))
             .all(&self.db)
@@ -71,6 +71,12 @@ impl SubscriptionTrait for SubscriptionService {
         for subscription in subscriptions {
             subscribers.push(subscription.subscriber_id);
         }
+
+        let subscribers = subscriber::Entity::find()
+            .filter(subscriber::Column::Id.is_in(subscribers))
+            .all(&self.db)
+            .await?;
+
 
         Ok(subscribers)
     }

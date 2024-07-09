@@ -31,7 +31,7 @@ impl Mailer {
         match res {
             Ok(m) => recipient = m,
             Err(e) => {
-                eprintln!("Could not parse email: {e:?}");
+                eprintln!("Could not parse email: {} error: {e:?}", notification_message.subscriber);
                 return;
             }
         }

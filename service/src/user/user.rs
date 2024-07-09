@@ -31,7 +31,7 @@ impl UserTrait for UserService {
                 .await?;
             let player_account_ids = subscribed_player_ids
                 .iter()
-                .map(|x| x.id )
+                .map(|x| x.player_account_id )
                 .collect();
             Ok((user, player_account_ids))
         } else {

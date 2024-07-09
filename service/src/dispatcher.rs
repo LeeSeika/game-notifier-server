@@ -28,7 +28,7 @@ pub async fn dispatch(ctx: &Context, player_in_game_map: HashMap<i64, &str>, gam
         for subscriber in subscribers {
 
             let msg = NotificationMessage {
-                subscriber: subscriber.to_string(),
+                subscriber: subscriber.email.to_owned(),
                 game: (*game_info).to_owned(),
             };
             let json_res = serde_json::to_string(&msg);
